@@ -16,11 +16,29 @@ import pygame
 class LcarsModule:
 
     def __init__(self):
-        self.sprites = pygame.sprite.LayeredDirty()
-        self.surface = pygame.Surface((1020, 510))
+        #self.sprites = pygame.sprite.LayeredDirty()
+        #self.surface = pygame.Surface((1020, 510))
+        self.views = {}
+        self.views['main'] = LcarsModuleView('main')
+        self.switchView('main')
+        self.mqtt_topic = None
 
-    def addSprite(self, sprite):
-        self.sprites.add(sprite)#, layer=1)
+    def addView(self, viewName):
+        self.views[viewName] = LcarsModuleView(viewName)
+        
+    def switchView(self, viewName):
+        # get view by name
+        v = self.views.get(viewName)
+        # set sprites and surface to new view
+        self.sprites = v.sprites
+        self.surface = v.surface
+
+    def removeView(self, viewName):
+        self.views.pop(viewName)
+
+    def addSprite(self, sprite, viewName="main"):
+        #self.sprites.add(sprite)#, layer=1)
+        self.views[viewName].sprites.add(sprite)
 
     def enter(self):
         pass
@@ -32,13 +50,20 @@ class LcarsModule:
         self.sprites.update(self.surface)
 
     def handleEvents(self, event, fpsClock):
-        for sprite in self.sprites.sprites():
-            if hasattr(event, "pos"):
-                #print("Sprite top:{} left:{}".format(sprite.rect.top, sprite.rect.left))
-                #print("Event position: ", event.pos)
-                x, y = event.pos
-                x -= 212
-                y -= 194
+        if hasattr(event, "pos"):
+            x, y = event.pos
+            x -= 212
+            y -= 194
+            event.pos = (x, y)
+            for sprite in self.sprites.sprites():
                 focussed = sprite.rect.collidepoint((x,y))
                 if (focussed or sprite.focussed) and sprite.handleEvent(event, fpsClock):
                     break
+
+class LcarsModuleView:
+
+    def __init__(self, viewName):
+        self.name = viewName
+        self.sprites = pygame.sprite.LayeredDirty()
+        self.surface = pygame.Surface((1020, 510))
+

@@ -5,11 +5,13 @@ from ui.widgets.gifimage import LcarsGifImage
 from ui.widgets.lcars_widgets import *
 from ui.widgets.screen import LcarsScreen
 from modules.menu import MenuModule
+from modules.chiller import ChillerModule
 
 from datasources.network import get_ip_address_string
 import vlc
 import time
 
+BUTTON_SIZE = (183, 66)
 
 class ScreenMain(LcarsScreen):
     def setup(self, all_sprites):
@@ -23,6 +25,8 @@ class ScreenMain(LcarsScreen):
         self.modules = {}
         self.currentModule = None
 
+        # Pass reference to MQTT client??
+        self.addModule("chiller", ChillerModule())
         self.addModule("menu", MenuModule())
 
         all_sprites.add(LcarsBackgroundImage("assets/lcars_screen_1.png"),
@@ -71,11 +75,11 @@ class ScreenMain(LcarsScreen):
         all_sprites.add(self.stardate, layer=1)
 
         # buttons
-        all_sprites.add(LcarsButton(colours.RED_BROWN, (14, 1059), "LOGOUT", self.logoutHandler),
+        all_sprites.add(LcarsButton(colours.RED_BROWN, (14, 1059), "LOGOUT", BUTTON_SIZE, "button", self.logoutHandler),
                         layer=4)
         #all_sprites.add(LcarsToggleButton(colours.PURPLE, (207, 227), "WOMP FM"),
         #                layer=4)
-        all_sprites.add(LcarsToggleButton(colours.PURPLE, (207, 227), "WOMP FM", self.playWOMP),
+        all_sprites.add(LcarsToggleButton(colours.ORANGE, (141, 856), "100.5", (86, 29), "rect", self.playWOMP),
                         layer=4)
         '''
         all_sprites.add(LcarsButton(colours.BEIGE, (107, 127), "SENSORS", self.sensorsHandler),
@@ -111,6 +115,12 @@ class ScreenMain(LcarsScreen):
 
     def addModule(self, name, module):
         self.modules[name] = module
+
+        # Register Module with MQTT client
+        if module.mqtt_topic:
+            print("Registering", name, "module with MQTT")
+            self.mqtt_client.register(module)
+
         # set the current module to the first one added
         if not self.currentModule:
             self.currentModule = module
@@ -138,11 +148,13 @@ class ScreenMain(LcarsScreen):
         LcarsScreen.update(self, screenSurface, fpsClock)
         if self.currentModule:
             self.currentModule.update()
-            self.surface.blit(self.currentModule.surface, (212, 194))
+            #self.surface.blit(self.currentModule.surface, (212, 194))
+            screenSurface.blit(self.currentModule.surface, (212, 194))
 
     def handleEvents(self, event, fpsClock):
         if event.type == pygame.MOUSEBUTTONDOWN:
             self.beep1.play()
+            self.currentModule.handleEvents(event, fpsClock)
 
         if event.type == pygame.MOUSEBUTTONUP:
             self.currentModule.handleEvents(event, fpsClock)
@@ -188,7 +200,7 @@ class ScreenMain(LcarsScreen):
 
     def playWOMP(self, item, event, clock):
         if not self.playingWOMP:
-            url = 'https://streamingv2.shoutcast.com/1005-womp-fm'
+            url = 'https://us2.maindigitalstream.com/ssl/WUKL'
             instance = vlc.Instance()
             self.player = instance.media_player_new()
             media=instance.media_new(url)

@@ -6,6 +6,7 @@ class LcarsScreen:
     def __init__(self):
         self.nextScreen = None
         self.lastFrameTicks = 0
+        self.mqtt_client = None
     
     def setup(self):
         """
@@ -56,3 +57,6 @@ class LcarsScreen:
         nextScreen = self.nextScreen
         self.nextScreen = None
         return nextScreen
+
+    def add_mqtt_client(self, client):
+        self.mqtt_client = client

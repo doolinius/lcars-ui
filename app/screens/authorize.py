@@ -10,6 +10,8 @@ from ui.widgets.lcars_widgets import LcarsText
 from ui.widgets.screen import LcarsScreen
 from ui.widgets.lcars_widgets import LcarsButton
 
+BUTTON_SIZE = (183, 66)
+
 class ScreenAuthorize(LcarsScreen):
 
     def setup(self, all_sprites):
@@ -31,19 +33,19 @@ class ScreenAuthorize(LcarsScreen):
         #all_sprites.add(LcarsText(colours.BLUE, (390, -1), "FAILED ATTEMPTS WILL BE REPORTED", 1.5),layer=1)
 
 
-        all_sprites.add(LcarsButton(colours.GREY_BLUE, (512, 96), "1", self.num_1), layer=2)
-        all_sprites.add(LcarsButton(colours.GREY_BLUE, (592, 96), "2", self.num_2), layer=2)
-        all_sprites.add(LcarsButton(colours.GREY_BLUE, (512, 320), "3", self.num_3), layer=2)
-        all_sprites.add(LcarsButton(colours.GREY_BLUE, (592, 320), "4", self.num_4), layer=2)
-        all_sprites.add(LcarsButton(colours.GREY_BLUE, (512, 544), "5", self.num_5), layer=2)
-        all_sprites.add(LcarsButton(colours.GREY_BLUE, (592, 544), "6", self.num_6), layer=2)
-        all_sprites.add(LcarsButton(colours.GREY_BLUE, (512, 768), "7", self.num_7), layer=2)
-        all_sprites.add(LcarsButton(colours.GREY_BLUE, (592, 768), "8", self.num_8), layer=2)
-        all_sprites.add(LcarsButton(colours.GREY_BLUE, (512, 976), "9", self.num_9), layer=2)
-        all_sprites.add(LcarsButton(colours.GREY_BLUE, (592, 976), "0", self.num_0), layer=2)
+        all_sprites.add(LcarsButton(colours.GREY_BLUE, (512, 96), "1",BUTTON_SIZE, "button", self.num_1), layer=2)
+        all_sprites.add(LcarsButton(colours.GREY_BLUE, (592, 96), "2",BUTTON_SIZE, "button", self.num_2), layer=2)
+        all_sprites.add(LcarsButton(colours.GREY_BLUE, (512, 320), "3",BUTTON_SIZE, "button", self.num_3), layer=2)
+        all_sprites.add(LcarsButton(colours.GREY_BLUE, (592, 320), "4",BUTTON_SIZE, "button", self.num_4), layer=2)
+        all_sprites.add(LcarsButton(colours.GREY_BLUE, (512, 544), "5",BUTTON_SIZE, "button", self.num_5), layer=2)
+        all_sprites.add(LcarsButton(colours.GREY_BLUE, (592, 544), "6",BUTTON_SIZE, "button", self.num_6), layer=2)
+        all_sprites.add(LcarsButton(colours.GREY_BLUE, (512, 768), "7",BUTTON_SIZE, "button", self.num_7), layer=2)
+        all_sprites.add(LcarsButton(colours.GREY_BLUE, (592, 768), "8",BUTTON_SIZE, "button", self.num_8), layer=2)
+        all_sprites.add(LcarsButton(colours.GREY_BLUE, (512, 976), "9",BUTTON_SIZE, "button", self.num_9), layer=2)
+        all_sprites.add(LcarsButton(colours.GREY_BLUE, (592, 976), "0",BUTTON_SIZE, "button", self.num_0), layer=2)
 
         if config.DEV_MODE:
-            all_sprites.add(LcarsButton(colours.GREY_BLUE, (0, 770), "X", self.exitHandler, (30, 30)), layer=2)
+            all_sprites.add(LcarsButton(colours.GREY_BLUE, (0, 770), "X", (30, 30), "rect", self.exitHandler), layer=2)
         
         self.layer1 = all_sprites.get_sprites_from_layer(1)
         self.layer2 = all_sprites.get_sprites_from_layer(2)

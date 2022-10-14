@@ -56,9 +56,14 @@ class UserInterface:
             newScreen = self.screen.getNextScreen()
             if (newScreen):
                 self.all_sprites.empty()
+                if self.mqtt_client:
+                    newScreen.add_mqtt_client(self.mqtt_client)
                 newScreen.setup(self.all_sprites)
                 self.screen = newScreen
                 break
+
+    def add_mqtt_client(self, client):
+        self.mqtt_client = client
     
     def isRunning(self):
         pygame.display.get_init()

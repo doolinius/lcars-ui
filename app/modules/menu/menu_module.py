@@ -7,21 +7,29 @@ class MenuModule(LcarsModule):
 
     def __init__(self):
         LcarsModule.__init__(self)
+
+        self.addView('new_menu')
+        self.new_menu_label = LcarsText(colours.ORANGE, (0, 0), "REPLICATE NEW MENU", 3, colours.BLACK)
+        self.addSprite(self.new_menu_label, 'new_menu')
+
         self.menu_label = LcarsText(colours.ORANGE, (0, 0), "CURRENT MENU", 3, colours.BLACK)
         self.addSprite(self.menu_label)
 
         # add the dinner labels
         self.dinner_labels = []
-        y = 78
+        y = 84 
         for i in range(7):
             #label = LcarsText(colours.ORANGE, (y, 48), '', 3, colours.BLACK, self.toggle_made)
             label = DinnerText(y, 48, self.toggle_made)
+            row = DinnerRow(self, 48, y)
             # invisible by default
-            #label.visible = False
+            label.visible = False
             self.dinner_labels.append(label)
             self.addSprite(label)
-            y += 58
+            y += 62 
         self.db = MenuDB()
+
+        #self.switchView('new_menu')
 
     def setMenu(self, menu):
         if menu:
