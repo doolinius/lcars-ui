@@ -6,6 +6,8 @@ from ui.widgets.lcars_widgets import *
 from ui.widgets.screen import LcarsScreen
 from modules.menu import MenuModule
 from modules.chiller import ChillerModule
+from modules.thermostat import ThermostatModule
+from modules.sousvide import SousVideModule
 
 from datasources.network import get_ip_address_string
 import vlc
@@ -26,6 +28,8 @@ class ScreenMain(LcarsScreen):
         self.currentModule = None
 
         # Pass reference to MQTT client??
+        #self.addModule("thermostat", ThermostatModule())
+        self.addModule("sousvide", SousVideModule())
         self.addModule("chiller", ChillerModule())
         self.addModule("menu", MenuModule())
 
@@ -40,10 +44,10 @@ class ScreenMain(LcarsScreen):
                         layer=1)
 
         # Menu, Environmental, Security, 
-        self.addBlockButton(all_sprites, colours.RED_BROWN, "MESS HALL")
-        self.addBlockButton(all_sprites, colours.ORANGE, "SECURITY")
+        self.addBlockButton(all_sprites, colours.RED_BROWN, "MESS HALL", self.modules["menu"].callback)
+        self.addBlockButton(all_sprites, colours.ORANGE, "FERMENTATION", self.modules["chiller"].callback)
+        self.addBlockButton(all_sprites, colours.BLUE, "SOUS VIDE", self.modules["sousvide"].callback)
         self.addBlockButton(all_sprites, colours.BEIGE, "ENVIRONMENTAL")
-        self.addBlockButton(all_sprites, colours.BLUE, "TEN FORWARD")
         #all_sprites.add(LcarsBlockMedium(colours.RED_BROWN, (328, 24), "LIGHTS"),
         #                layer=1)
         #all_sprites.add(LcarsBlockSmall(colours.ORANGE, (395, 24), "CAMERAS"),
@@ -115,6 +119,11 @@ class ScreenMain(LcarsScreen):
 
     def addModule(self, name, module):
         self.modules[name] = module
+
+        def switchCallback(widget, event, clock):
+            self.changeModule(name)
+
+        self.modules[name].callback = switchCallback
 
         # Register Module with MQTT client
         if module.mqtt_topic:

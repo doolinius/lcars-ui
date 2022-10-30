@@ -3,36 +3,28 @@ from ui.widgets.lcars_widgets import *
 import json
 import paho.mqtt.client as mqtt
 
-class ChillerModule(LcarsModule):
+class ThermostatModule(LcarsModule):
 
     def __init__(self):
         LcarsModule.__init__(self)
         self.data = {
-                "temp": 0,
-                "target_temp": 65,
+                "temperature": 0,
                 "humidity": 0,
-                "fan_on": False
         }
-        self.mqtt_client = mqtt.Client('ChillerModule')
+        self.mqtt_client = mqtt.Client('ThermostatModule')
         self.mqtt_client.connect('localhost')
 
         #self.addView('main')
-        self.main_label = LcarsText(colours.ORANGE, (0, 0), "FERMENTATION CHILLER", 3, colours.BLACK)
+        self.main_label = LcarsText(colours.ORANGE, (0, 0), "Thermostat-IT-697", 3, colours.BLACK)
         self.addSprite(self.main_label)
 
-        self.minus_button = LcarsButton(colours.BEIGE, (62, 0), "-", (70, 54), "tab-left", self.decrementTemp)
-        self.addSprite(self.minus_button)
-        self.target_temp_label = LcarsText(colours.ORANGE, (62 ,90), str(self.data['target_temp']), 3, colours.BLACK)
-        self.addSprite(self.target_temp_label)
-        self.plus_button = LcarsButton(colours.BEIGE, (62, 140), "+", (70, 54), "tab-right", self.incrementTemp)
-        self.addSprite(self.plus_button)
-
-        self.current_temp_label = LcarsText(colours.ORANGE, (124,90), str(round(self.data['temp'])), 3, colours.BLACK)
+       
+        self.current_temp_label = LcarsText(colours.ORANGE, (124,90), str(round(self.data['temperature'])), 3, colours.BLACK)
         self.addSprite(self.current_temp_label)
 
         self.humidity_label = LcarsText(colours.ORANGE, (186,90), str(self.data['humidity']), 3, colours.BLACK)
         self.addSprite(self.humidity_label)
-        self.mqtt_topic = "intrepid/chiller"
+        self.mqtt_topic = "intrepid/thermostat"
 
         # Current Temperature and humidity display
         # Temperature threshold/thermostat temp
@@ -40,12 +32,11 @@ class ChillerModule(LcarsModule):
 
     def on_message(self, client, userdata, message):
         json_data = message.payload.decode("utf-8")
-        print("ChillerModule received message: " ,str(json_data))
+        print("ThermostatModule received message: " ,str(json_data))
         self.set_data(json_data)
 
     def enter(self):
         # send signal to get current temp/humidity
-        self.mqtt_client.publish("chiller/get", "get")
         pass
 
     def set_data(self, json_data):
@@ -53,13 +44,9 @@ class ChillerModule(LcarsModule):
         self.set_labels()
 
     def set_labels(self):
-        temp = round(float(self.data['temp']), 2)
-        curtemp = "{:.2f}".format(temp)
-        #curtemp = "{:.2f}".format(float(self.data['temp']))
+        curtemp = "{:.2f}".format(self.data['temperature'])
         humidity = "{}%".format(round(self.data['humidity']))
-        target_temp = "{}".format(round(self.data['target_temp']))
         self.current_temp_label.setText(curtemp)
-        self.target_temp_label.setText(target_temp)
         self.humidity_label.setText(humidity)
 
     def decrementTemp(self, item, event, clock):

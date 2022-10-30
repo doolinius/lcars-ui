@@ -12,6 +12,9 @@ class MenuDB:
                              sqlite3.PARSE_COLNAMES)
         self.db.row_factory = sqlite3.Row
 
+    def close(self):
+        self.db.close()
+
     def set_made(self, menu_id, dinner_id, made):
         self.connect()
         print("SET MADE")
